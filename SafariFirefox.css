@@ -1,0 +1,337 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+@namespace html url("http://www.w3.org/1999/xhtml");
+
+/* General text tweaks [font: message-box gives San Francisco font in OS X 10.11] */
+
+label { 
+    text-shadow: none !important; 
+}
+menu, menuitem {    
+    font: message-box !important; 
+    font-size: 11pt !important;
+}
+
+/* URL bar and its container/wrapper */
+
+/* urlbar-container : contains back+forward buttons and urlbar */
+#nav-bar #urlbar-container,
+#nav-bar #search-container { 
+    height: 30px !important;
+    padding: 0px 4px !important;
+    -moz-box-pack: center !important;
+}
+
+/* some spacers to avoid ultra-long urlbar */
+#nav-bar #urlbar-container::before,
+#nav-bar #urlbar-container::after {
+    content: '';
+    display: block;
+    min-width: 0px;
+    -moz-box-flex: 1 !important;
+}
+
+/* urlbar-wrapper : contains forward button and urlbar */
+#nav-bar #urlbar-wrapper {
+    margin: 0px !important;
+    margin-bottom: 0px !important;
+    padding: 0px !important;
+    height: 55px !important;
+    clip-path: unset !important;
+}
+
+/* urlbar : contains the url, info icons, go/reload/stop buttons etc */
+#nav-bar #urlbar {
+    height: 23px !important;
+    width: 45em !important;
+    margin: 3px 10px !important;
+    background: linear-gradient(to bottom, hsla(0,0%,99%,1), hsla(0,0%,95%,1)) padding-box !important;
+    border: 0.5px solid rgb(213,211,213) !important;
+    border-radius: 4px !important;
+    font: message-box !important;
+    font-size: 15px !important; 
+    color: rgb(87,87,87) !important;
+    /* last two box shadows here are transparent counterparts for animating focus ring shadows below */
+    box-shadow: 
+        inset 0 -0.5px 0px 0px hsla(0,0%,70%,1), 
+        inset 0 0.5px 0.5px 0px white,
+        0 0 5px 15px rgba(151,195,243,0),
+        inset 0 0 0 0px rgba(151,195,243,0) !important; 
+}
+
+#nav-bar #urlbar[focused="true"] {
+    color: black !important;
+    /* Animated box shadows to recreate the native OS X 10.11 focus-ring effect */
+    transition: box-shadow 300ms, border 300ms !important;
+    box-shadow: 
+        inset 0 -0.5px 0px 0px rgb(168,205,245), 
+        inset 0 0.5px 0.5px 0px white,
+        0 0 0px 2.5px rgba(151,195,243,0.9),
+        inset 0 0 0 0.5px rgba(151,195,243,0.9) !important; 
+    border: 0.5px solid rgba(136,178,220,0.9) !important;
+}
+
+/* The ".urlbar-input-box::after" styles add a small fade-out effect for long URLs when the URL bar isn't focused */
+#nav-bar #urlbar .urlbar-input-box::after {
+    content: ''; 
+    display: block;
+    width: 75px !important;
+    margin-inline-start: -75px;
+    height: 15px;
+    /* Need 2D gradient (color going down and alpha going across). Do it w/ an SVG mask */
+    background: url('data:image/svg+xml;utf8,\
+       <svg xmlns="http://www.w3.org/2000/svg" width="50" height="15">\
+         <defs>\
+           <linearGradient x1="100%" x2="0%" y1="0%" y2="0%" id="WtoBgrad">\
+            <stop offset="0%" stop-color="white" />\
+            <stop offset="100%" stop-color="black" />\
+           </linearGradient>\
+           <linearGradient x1="0%" x2="0%" y1="0%" y2="100%" id="colorGrad">\
+            <stop offset="0%" stop-color="rgb(250,250,250)" />\
+            <stop offset="100%" stop-color="rgb(243,243,243)" />\
+           </linearGradient>\
+           <mask id="fadeLeft">\
+            <rect x="0" y ="0" width="100%" height="100%" fill="url(%23WtoBgrad)"/>\
+           </mask>\
+         </defs>\
+         <rect x="0" y="0" width="100%" height="100%" fill="url(%23colorGrad)" mask="url(%23fadeLeft)" />\
+       </svg>') 0px 0px / 50px 100% no-repeat, 
+       linear-gradient(to bottom, rgb(250,250,250), rgb(243,243,243)) 50px 0px / calc(100% - 50px) 100% no-repeat; 
+    position: relative;
+    z-index: 1;
+    pointer-events: none;
+}
+
+#nav-bar #urlbar[focused=true] .urlbar-input-box::after {
+    opacity: 0 !important;
+    transition: opacity 300ms ease-out !important;
+}
+
+/* note: private browsing mode keeps this as is, non-private is the more complex case */
+#main-window:not([privatebrowsingmode=temporary]) #nav-bar:-moz-window-inactive #urlbar .urlbar-input-box::after {
+    background: linear-gradient(to left, rgba(255,255,255,1), rgba(255,255,255,0)) !important;   
+}
+
+
+/* URL bar cruft styling and rearrangement */
+
+
+
+#nav-bar #urlbar-
+-button {
+    margin-left: 2px !important;
+    margin-right: 4px !important;
+    padding: unset !important;
+    border: none !important;
+    -moz-image-region: unset !important;
+    /* 270 degree arc w/triangle endcap */
+    list-style-image: url('data:image/svg+xml;utf8,\
+       <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36">\
+          <path d="M30,19 A 12,12 0 1 1 18,7" fill="transparent" stroke="rgb(125,125,125)" stroke-width="3"/>\
+          <path d="M18,0 L18,14 L29,7 C" stroke="rgb(125,125,125)" fill="rgb(125,125,125)" stroke-width="0.5"/>\
+       </svg>') !important;
+}
+
+#nav-bar *:-moz-any(#urlbar-stop-button, #urlbar-reload-button, #urlbar-go-button):hover {
+    filter: brightness(50%);
+}
+#nav-bar #urlbar[focused=true] > *:-moz-any(#urlbar-stop-button, #urlbar-reload-button, #urlbar-go-button) {
+    margin-left: 0px !important;
+}
+
+/* urlbar-icons: holds reader-mode button and page-report button (pop-up block thingy?) */
+#nav-bar #urlbar #urlbar-icons {
+    -moz-box-ordinal-group: 1 !important;
+    width: 40px !important;
+    margin-right: -40px !important;
+    position: relative !important;
+    transition: opacity 300ms ease-in-out, margin 300ms ease-in-out !important;
+}
+#nav-bar #urlbar #urlbar-icons > * {
+    transition: opacity 300ms ease-in-out, margin 300ms ease-in-out !important;
+}
+#nav-bar #urlbar[focused=true] #urlbar-icons {
+    opacity: 0 !important;
+    pointer-events: none !important;    
+}
+#nav-bar #urlbar[focused=true] #urlbar-icons > * {
+    position: relative !important;
+    margin-left: 0px !important;
+    pointer-events: none !important;
+}
+#reader-mode-button {
+    margin-left: 1px !important;
+    margin-bottom: 0.5px !important;
+    padding: 2px 2px 1.5px 3px !important;
+    border-top-left-radius: 4px !important;
+    border-bottom-left-radius: 4px !important;    
+    -moz-image-region: unset !important;
+    /* three equal-length lines and a fourth, shorter line, evenly spaced */
+    list-style-image: url('data:image/svg+xml;utf8,\
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16">\
+          <line x1="1" y1="3.5" x2="14" y2="3.5" stroke="rgb(115,115,115)" stroke-width="1" stroke-linecap="square"/>\
+          <line x1="1" y1="6.5" x2="14" y2="6.5" stroke="rgb(115,115,115)" stroke-width="1" stroke-linecap="square"/>\
+          <line x1="1" y1="9.5" x2="14" y2="9.5" stroke="rgb(115,115,115)" stroke-width="1" stroke-linecap="square"/>\
+          <line x1="1" y1="12.5" x2="8" y2="12.5" stroke="rgb(115,115,115)" stroke-width="1" stroke-linecap="square"/>\
+        </svg>') !important;
+}
+#reader-mode-button:hover {
+    filter: brightness(50%) !important;
+}
+#reader-mode-button:hover:active,
+#reader-mode-button[readeractive] {
+    -moz-image-region: unset !important;
+    filter: brightness(10000%) !important;
+    background: black border-box !important;
+}
+
+/* identity-box: holds page-proxy-favicon (security info icon) and tracking protection icon */
+#nav-bar #urlbar #identity-box {
+    -moz-box-ordinal-group: 2 !important;
+    padding: 0px !important;
+    border: unset !important;
+    margin-left: 40px !important;
+    transition: margin 300ms ease-in-out !important;       
+}
+#nav-bar #urlbar #identity-icons > * {
+    margin-left: 0px !important;
+    transition: margin 300ms ease-in-out !important;       
+}
+#nav-bar  #identity-icons > #page-proxy-favicon {
+    margin-right: -1px !important;
+}
+#nav-bar #urlbar[focused=true] #identity-icons > * {
+    margin-left: -20px !important;
+    pointer-events: none !important;
+}
+#nav-bar #urlbar #identity-icon-labels {
+    transition: margin 300ms ease-in-out, opacity 300ms ease-in-out !important;       
+}
+#nav-bar #urlbar[focused=true] #identity-icon-labels {
+    opacity: 0 !important;
+    margin-left: -18em !important;
+    pointer-events: none !important;
+}
+#nav-bar #urlbar[focused=true] #identity-box {
+    margin-left: 0px !important;
+}
+#nav-bar #identity-box:hover {
+    filter: brightness(90%) !important;
+}
+
+
+/* urlbar-input-box holds the actual URL textbox */
+#nav-bar #urlbar .urlbar-input-box {
+    -moz-box-ordinal-group: 3 !important;
+    transition: all 300ms ease-in-out !important;
+}
+#nav-bar #urlbar[focused=true] .urlbar-input-box {
+    -moz-box-ordinal-group: 3 !important;
+    transition: all 300ms ease-in-out !important;
+}
+#nav-bar #urlbar .urlbar-input-box html|input.urlbar-input {
+    padding: unset !important;
+}
+
+/* notification popup box: info about stuff like plugin permissions and location requests */
+#nav-bar #urlbar #notification-popup-box {
+    -moz-box-ordinal-group: 4 !important;
+    padding: 0px !important;
+    margin: 0px !important;
+    border: none !important;
+    transition: all 300ms ease-in-out !important;
+    background: transparent !important;
+}
+#nav-bar #urlbar #notification-popup-box > * {
+    transition: opacity 300ms ease-in-out, margin 300ms ease-in-out !important;
+}
+#nav-bar #urlbar[focused=true] #notification-popup-box {
+    opacity: 0 !important;
+}
+#nav-bar #urlbar[focused=true] #notification-popup-box > * {
+    opacity: 0 !important;
+    margin-left: 0px !important;
+    margin-right: -18px !important;
+    pointer-events: none !important;
+}
+#nav-bar #urlbar #notification-popup-box > *:hover,
+#nav-bar #urlbar #notification-popup-box > *:hover:active {
+    filter: brightness(50%) !important;
+}
+
+
+/* search textbox */
+
+#nav-bar .searchbar-textbox {
+    height: 23px !important;
+    min-height: 23px !important;
+    font: message-box !important;
+    margin: 7px 3.5px !important;
+    background: linear-gradient(to bottom, hsla(0,0%,99%,1), hsla(0,0%,95%,1)) padding-box !important;
+    border: 0.5px solid rgb(213,211,213) !important;
+    border-radius: 4px !important;
+    font: message-box !important;
+    font-size: 12px !important; 
+    color: rgb(87,87,87) !important;
+    /* last two box shadows here are transparent counterparts for animating focus ring shadows below */
+    box-shadow: 
+        inset 0 -0.5px 0px 0px hsla(0,0%,70%,1), 
+        inset 0 0.5px 0.5px 0px white,
+        0 0 5px 15px rgba(151,195,243,0),
+        inset 0 0 0 0px rgba(151,195,243,0) !important; 
+}
+#nav-bar .searchbar-textbox[focused=true] {
+    color: black !important;
+    /* Animated box shadows to recreate the native OS X 10.11 focus-ring effect */
+    transition: box-shadow 300ms, border 300ms !important;
+    box-shadow: 
+        inset 0 -0.5px 0px 0px rgb(168,205,245), 
+        inset 0 0.5px 0.5px 0px white,
+        0 0 0px 2.5px rgba(151,195,243,0.9),
+        inset 0 0 0 0.5px rgba(151,195,243,0.9) !important; 
+    border: 0.5px solid rgba(136,178,220,0.9) !important;
+}
+
+
+/* ================= */
+/* More misc. tweaks */
+/* ================= */
+
+/* Location bar autocomplete */
+.ac-normal-text { 
+    font: message-box !important; 
+} 
+.ac-url-text:not([selected=true]) { 
+    color: gray !important; 
+}
+
+/* Redundant navigation */
+window:not([chromehidden~="toolbar"]) #contentAreaContextMenu *:-moz-any(#context-navigation, #context-sep-navigation) {
+    display: none !important;
+}
+
+/* Lastpass addon menu icon color adjustments */
+#lpt_lastpass-compact-menu menuitem:hover,
+#lpt_lastpass-compact-menu menu:hover,
+#lpt_lastpass-compact-menu menuitem:active,
+#lpt_lastpass-compact-menu menu:active,
+#lpt_lastpass-compact-menu .groupmenu:hover {
+    background-color: rgb(67,150,250) !important;
+    color: white !important;
+}
+
+/* Put CSS variables at the end bc it messes up Stylish editor indentation and highlighting.. */
+
+#identity-box {
+    --identity-box-selected-background-color: none;
+}
+
+:root 
+{
+    --tab-min-height: 30px !important;
+    --space-above-tabbar: 0px !important;
+    --tab-toolbar-navbar-overlap: 0px !important;
+    --navbar-tab-toolbar-highlight-overlap: 0px !important;
+    --backbutton-urlbar-overlap: 0px !important;
+    --toolbarbutton-combined-backgroundimage: none !important;
+}
+
