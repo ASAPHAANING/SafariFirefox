@@ -48,7 +48,7 @@ menu, menuitem {
     border: 0.5px solid rgb(213,211,213) !important;
     border-radius: 4px !important;
     font: message-box !important;
-    font-size: 15px !important; 
+    font-size: 13px !important; 
     color: rgb(87,87,87) !important;
     /* last two box shadows here are transparent counterparts for animating focus ring shadows below */
     box-shadow: 
